@@ -1,8 +1,8 @@
 <template>
 
-  <div class="login-container">
+  <div class="register-container">
 
-    <el-form ref="loginForm" :model="loginForm" class="login-form" autocomplete="on" label-position="left">
+    <el-form ref="registerForm" :model="registerForm" :rules="loginRules" class="register-form" autocomplete="on" label-position="left">
 
       <el-form-item prop="username">
         <span class="svg-container">
@@ -10,28 +10,60 @@
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
-          placeholder="用户名/邮箱/手机号(不可用)"
+          v-model="registerForm.username"
+          placeholder="用户名"
           name="username"
           type="text"
           tabindex="1"
           autocomplete="on"
         />
       </el-form-item>
-      <el-form-item prop="username">
+
+      <el-form-item prop="email">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="email" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="用户名/邮箱/手机号(不可用)"
-          name="username"
+          ref="email"
+          v-model="registerForm.email"
+          placeholder="邮箱/手机号"
+          name="email"
           type="text"
           tabindex="1"
           autocomplete="on"
         />
       </el-form-item>
+
+      <el-form-item prop="password">
+        <span class="svg-container">
+          <svg-icon icon-class="password" />
+        </span>
+        <el-input
+          ref="password"
+          v-model="registerForm.password"
+          placeholder="密码"
+          name="password"
+          type="password"
+          tabindex="1"
+          autocomplete="on"
+        />
+      </el-form-item>
+
+      <el-form-item prop="password">
+        <span class="svg-container">
+          <svg-icon icon-class="password" />
+        </span>
+        <el-input
+          ref="repassword"
+          v-model="registerForm.repassword"
+          placeholder="确认密码"
+          name="repassword"
+          type="password"
+          tabindex="1"
+          autocomplete="on"
+        />
+      </el-form-item>
+    
     </el-form>
   </div>
 </template>
@@ -39,16 +71,48 @@
 <script>
 
 export default {
-  name: 'SocialSignin', data() {
+  name: 'SocialSignin', 
+  data() {
+    const validateemail = (rule, value, callback) => {
+      var mail = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/
+      var phone = /^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$/
+      if (!(mail.test(value)||phone.test(value))) {
+        callback(new Error('格式有误'))
+      } else {
+        callback()
+      }
+    }
+    const validatepasswd= (rule,value,callback)=>{
+      console.log("123")
+        if(value.password!=value.repassword){
+          callback(new Error('密码不一致！'))
+        }else{
+          callback()
+        }
+    }
     return {
-      loginForm: {
-        username: 'admin',
-        password: '111111'
+      loginRules: {
+        email: [{ required: true, trigger: 'blur', validator: validateemail }],
+        registerForm :[{required:true,trigger :'blur',validator: validatepasswd}]
+      },
+      registerForm: {
+        email: '',
+        tel: '',
+        password:'',
+        repassword:'',
+        username:''
       }
     }
   },
   methods: {
 
+  },
+  mounted() {
+    if (this.registerForm.username === '') {
+      this.$refs.username.focus()
+    } else if (this.registerForm.password === '') {
+      this.$refs.password.focus()
+    }
   }
 }
 </script>
@@ -87,21 +151,20 @@ export default {
   }
 </style>
 <style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
+
 
 $bg:#283443;
 $light_gray:#fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
+  .register-container .el-input input {
     color: $cursor;
   }
 }
 
 /* reset element-ui css */
-.login-container {
+.register-container {
   .el-input {
     display: inline-block;
     height: 47px;
@@ -134,17 +197,17 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
+$bg:#05264d;
 $dark_gray:#889aa4;
 $light_gray:#eee;
 
-.login-container {
+.register-container {
   min-height: 100%;
   width: 100%;
   background-color: $bg;
   overflow: hidden;
 
-  .login-form {
+  .register-form {
     position: relative;
     width: 520px;
     max-width: 100%;
