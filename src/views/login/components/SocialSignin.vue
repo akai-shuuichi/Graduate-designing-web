@@ -49,7 +49,7 @@
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="repassword">
         <span class="svg-container">
           <svg-icon icon-class="password" />
         </span>
@@ -63,6 +63,7 @@
           autocomplete="on"
         />
       </el-form-item>
+       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleRegister">Register</el-button>
     
     </el-form>
   </div>
@@ -83,8 +84,7 @@ export default {
       }
     }
     const validatepasswd= (rule,value,callback)=>{
-      console.log("123")
-        if(value.password!=value.repassword){
+        if(this.registerForm.password!=this.registerForm.repassword){
           callback(new Error('密码不一致！'))
         }else{
           callback()
@@ -93,7 +93,7 @@ export default {
     return {
       loginRules: {
         email: [{ required: true, trigger: 'blur', validator: validateemail }],
-        registerForm :[{required:true,trigger :'blur',validator: validatepasswd}]
+        repassword :[{required:true,trigger :'blur',validator: validatepasswd}]
       },
       registerForm: {
         email: '',
@@ -101,11 +101,31 @@ export default {
         password:'',
         repassword:'',
         username:''
-      }
+      },
+      loading:false
     }
   },
   methods: {
-
+     handleRegister() {
+      this.$refs.loginForm.validate(valid => {
+        console.log("123")
+        if (valid) {
+          console.log("12345yt");
+          this.loading = true
+          this.$store.dispatch('user/registerAdmin', this.loginForm)
+            .then(() => {
+              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              this.loading = false
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    }
   },
   mounted() {
     if (this.registerForm.username === '') {
