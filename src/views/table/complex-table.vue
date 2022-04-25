@@ -40,58 +40,83 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
+      <el-table-column label="菜品名称" sortable="custom" align="center" width="120" >
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Title" min-width="150px">
+      <el-table-column label="推荐语" sortable="custom" align="center" width="120" >
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <span>{{ row.context }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
+      <el-table-column label="原价" sortable="custom" align="center" width="80" >
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>zhanzhanzahn</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+      <el-table-column label="现价" sortable="custom" align="center" width="80" >
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
+          <span>{{ row.nowprice }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Imp" width="80px">
+      <el-table-column label="库存" sortable="custom" align="center" width="80" >
         <template slot-scope="{row}">
-          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
+          <span>{{ row.count }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Readings" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+<!--      <el-table-column label="Date" width="150px" align="center">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span>{{ row.createdata | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Title" min-width="150px">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>-->
+<!--          <el-tag>{{ row.type | typeFilter }}</el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Author" width="110px" align="center">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span>{{ row.author }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span style="color:red;">{{ row.reviewer }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Imp" width="80px">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Readings" align="center" width="95">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
+<!--          <span v-else>0</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column label="Status" class-name="status-col" width="100">-->
+<!--        <template slot-scope="{row}">-->
+<!--          <el-tag :type="row.status | statusFilter">-->
+<!--            {{ row.status }}-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column label="操作" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            Edit
+            修改
           </el-button>
           <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            Publish
+            上架
           </el-button>
           <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            Draft
+            下架
           </el-button>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            Delete
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -154,9 +179,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -233,8 +256,8 @@ export default {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+        this.list = response.data
+        this.total = response.data.length
 
         // Just to simulate the time of the request
         setTimeout(() => {
