@@ -5,6 +5,8 @@
 <script>
 import echarts from 'echarts'
 import resize from './mixins/resize'
+import request from '@/utils/request'
+import { on } from 'codemirror'
 
 export default {
   mixins: [resize],
@@ -28,6 +30,7 @@ export default {
   },
   data() {
     return {
+      allDatas: [],
       chart: null
     }
   },
@@ -43,18 +46,59 @@ export default {
   },
   methods: {
     initChart() {
+      // 请求数据
+      request({
+        url: '/order/queryData',
+        method: 'post',
+        data:{
+          time:1650965933371
+        }
+      }).then(data=>{
+        let cateMap = [];
+        let idToMap = [];
+        let len =data.data.length
+        for(let i=0;i<len;i++){
+         let item= data.data[i];
+         for(let j=0;j<item.length;j++){
+          let objs=JSON.parse(item[j].order_items)
+          for(let k=0;k<objs.length;k++){
+            let obj=objs[k];
+            if(cateMap[obj.id]==null){
+              cateMap[obj.id]=Array(len).fill(0);
+            }
+            idToMap[obj.id]=obj.name;
+            cateMap[obj.id][i]+=(obj.count)
+          }
+         }
+         
+        }
+        for(let i=0;i<idToMap.length;i++){
+          
+        }
+      })
+      
       this.chart = echarts.init(document.getElementById(this.id))
       const xData = (function() {
-        const data = []
-        for (let i = 1; i < 13; i++) {
-          data.push(i + 'month')
+        const data = [];
+        let day=new Date().getDay();
+        let week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        for (let i = 6; i >0;i--) {
+          data.push(week[(day-i+7)%7])
         }
         return data
       }())
+      var menu=['1','2','3']
+      var datas={};
+      datas.name='233333'
+      datas.type='bar'
+      datas.stack='to'
+      datas.barMaxWidth=35
+      datas.barGap='10%'
+      datas.data=[1,2,3,4,5,6,7]
       this.chart.setOption({
         backgroundColor: '#344b58',
         title: {
-          text: 'statistics',
+          text: '近日数据',
           x: '20',
           top: '20',
           textStyle: {
@@ -90,7 +134,7 @@ export default {
           textStyle: {
             color: '#90979c'
           },
-          data: ['female', 'male', 'average']
+          data: menu
         },
         calculable: true,
         xAxis: [{
@@ -144,7 +188,6 @@ export default {
           bottom: 30,
           start: 10,
           end: 80,
-          handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
           handleSize: '110%',
           handleStyle: {
             color: '#d3dee5'
@@ -161,45 +204,10 @@ export default {
           start: 1,
           end: 35
         }],
-        series: [{
-          name: 'female',
-          type: 'bar',
-          stack: 'total',
-          barMaxWidth: 35,
-          barGap: '10%',
-          itemStyle: {
-            normal: {
-              color: 'rgba(255,144,128,1)',
-              label: {
-                show: true,
-                textStyle: {
-                  color: '#fff'
-                },
-                position: 'insideTop',
-                formatter(p) {
-                  return p.value > 0 ? p.value : ''
-                }
-              }
-            }
-          },
-          data: [
-            709,
-            1917,
-            2455,
-            2610,
-            1719,
-            1433,
-            1544,
-            3285,
-            5208,
-            3372,
-            2484,
-            4078
-          ]
-        },
+        series: [datas,
 
         {
-          name: 'male',
+          name: 'apc滴小含苞',
           type: 'bar',
           stack: 'total',
           itemStyle: {
@@ -230,7 +238,7 @@ export default {
             220
           ]
         }, {
-          name: 'average',
+          name: '共计',
           type: 'line',
           stack: 'total',
           symbolSize: 10,
