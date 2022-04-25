@@ -50,38 +50,37 @@ export default {
       request({
         url: '/order/queryData',
         method: 'post',
-        data:{
-          time:1650965933371
+        data: {
+          time: 1650965933371
         }
-      }).then(data=>{
-        let cateMap = [];
-        let idToMap =new Map();
-        let len =data.data.length
-        for(let i=0;i<len;i++){
-         let item= data.data[i];
-         for(let j=0;j<item.length;j++){
-          let objs=JSON.parse(item[j].order_items)
-          for(let k=0;k<objs.length;k++){
-            let obj=objs[k];
-            if(cateMap[obj.id]==null){
-              cateMap[obj.id]=Array(len).fill(0);
+      }).then(data => {
+        const cateMap = []
+        const idToMap = new Map()
+        const len = data.data.length
+        for (let i = 0; i < len; i++) {
+          const item = data.data[i]
+          for (let j = 0; j < item.length; j++) {
+            const objs = JSON.parse(item[j].order_items)
+            for (let k = 0; k < objs.length; k++) {
+              const obj = objs[k]
+              if (cateMap[obj.id] == null) {
+                cateMap[obj.id] = Array(len).fill(0)
+              }
+              idToMap.set(obj.id, obj.name)
+              cateMap[obj.id][i] += (obj.count)
             }
-            idToMap.set(obj.id,obj.name);
-            cateMap[obj.id][i]+=(obj.count)
           }
-         }
-
         }
-        let alldata=[];
-        idToMap.forEach(function(value,key){
-          //console.log(key,value);
-          let data={};
-          data.name=value
-          data.type='bar'
-          data.stack='to'
-          data.barMaxWidth=35
-          data.barGap='10%'
-          data.data=cateMap[key]
+        const alldata = []
+        idToMap.forEach(function(value, key) {
+          // console.log(key,value);
+          const data = {}
+          data.name = value
+          data.type = 'bar'
+          data.stack = 'to'
+          data.barMaxWidth = 35
+          data.barGap = '10%'
+          data.data = cateMap[key]
           alldata.push(data)
         })
         this.chart.setOption({
@@ -193,30 +192,29 @@ export default {
             start: 1,
             end: 35
           }],
-          series:alldata
+          series: alldata
         })
         console.log(alldata)
       })
 
       this.chart = echarts.init(document.getElementById(this.id))
       const xData = (function() {
-        const data = [];
-        let day=new Date().getDay();
-        let week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-        for (let i = 6; i >=0;i--) {
-          data.push(week[(day-i+7)%7])
+        const data = []
+        const day = new Date().getDay()
+        const week = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+        for (let i = 6; i >= 0; i--) {
+          data.push(week[(day - i + 7) % 7])
         }
         return data
       }())
-      var menu=['1','2','3']
-      var datas={};
-      datas.name='233333'
-      datas.type='bar'
-      datas.stack='to'
-      datas.barMaxWidth=35
-      datas.barGap='10%'
-      datas.data=[1,2,3,4,5,6,7]
-
+      var menu = ['1', '2', '3']
+      var datas = {}
+      datas.name = '233333'
+      datas.type = 'bar'
+      datas.stack = 'to'
+      datas.barMaxWidth = 35
+      datas.barGap = '10%'
+      datas.data = [1, 2, 3, 4, 5, 6, 7]
     }
   }
 }

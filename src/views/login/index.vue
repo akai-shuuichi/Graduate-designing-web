@@ -49,10 +49,9 @@
 
       <div style="position:relative">
         <div class="tips">
-          <span> </span>
-          <span> </span>
+          <span />
+          <span />
         </div>
-
 
         <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
           立即注册
