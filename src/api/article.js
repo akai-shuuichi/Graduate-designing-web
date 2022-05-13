@@ -4,7 +4,7 @@ export function fetchList(query) {
   return request({
     url: '/shopitem/query',
     method: 'get',
-    params: query
+    data: query
   })
 }
 
@@ -37,5 +37,29 @@ export function updateArticle(data) {
     url: '/shopitem/update',
     method: 'post',
     data
+  })
+}
+export function fetchByName(query) {
+  const param = { id: 1, title: query.title.trim() }
+  return request({
+    url: '/shopitem/querybyname',
+    method: 'get',
+    params: param
+  })
+}
+export function fetchByType(query) {
+  const param = { id: 1, tag: query.type.trim() }
+  return request({
+    url: '/shopitem/querybytag',
+    method: 'get',
+    params: param
+  })
+}
+export function fetchOrderList(query) {
+  const param = {}
+  return request({
+    url: '/api/evaluation/query',
+    method: 'get',
+    params: param
   })
 }

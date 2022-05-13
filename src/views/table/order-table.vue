@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         v-model.trim="listQuery.title"
-        placeholder="请输入您要查询的菜品"
+        placeholder="请输入您要查询的订单的商家编号"
         style="width: 200px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -102,52 +102,62 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column> -->
+      <template slot-scope="{ row }">
+        <!-- <span>{{ row.item_url }}</span> -->
+        <img :src="row.item_url" width="110" height="110">
+      </template>
+      <el-table-column
+        label="订单编号"
+        sortable="custom"
+        align="center"
+        width="120"
+      >
+        <template slot-scope="{ row }">
+          <span>{{ row.id }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="订单名称"
+        sortable="custom"
+        align="center"
+        width="120"
+      >
+        <template slot-scope="{ row }">
+          <span>{{ row.order_name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="成交价格"
+        sortable="custom"
+        align="center"
+        width="60"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.order_price }}</span>
+        </template>
 
+      </el-table-column>
       <el-table-column
-        label="菜品图片"
+        label="创建时间"
         sortable="custom"
         align="center"
         width="120"
       >
-        <template slot-scope="{ row }">
-          <!-- <span>{{ row.item_url }}</span> -->
-          <img :src="row.item_url" width="110" height="110">
+        <template slot-scope="{row}">
+          <span>{{ row.create_time }}</span>
         </template>
+
       </el-table-column>
       <el-table-column
-        label="菜品名称"
+        label="修改时间"
         sortable="custom"
         align="center"
         width="120"
       >
-        <template slot-scope="{ row }">
-          <span>{{ row.name }}</span>
+        <template slot-scope="{row}">
+          <span>{{ row.update_time }}</span>
         </template>
-      </el-table-column>
-      <el-table-column
-        label="介绍语"
-        sortable="custom"
-        align="center"
-        width="120"
-      >
-        <template slot-scope="{ row }">
-          <span>{{ row.context }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="原价" sortable="custom" align="center" width="80">
-        <template slot-scope="{ row }">
-          <span>{{ row.baseprice }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="现价" sortable="custom" align="center" width="80">
-        <template slot-scope="{ row }">
-          <span>{{ row.nowprice }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="库存" sortable="custom" align="center" width="80">
-        <template slot-scope="{ row }">
-          <span>{{ row.count }}</span>
-        </template>
+
       </el-table-column>
       <!--      <el-table-column label="Date" width="150px" align="center">-->
       <!--        <template slot-scope="{row}">-->
@@ -199,27 +209,12 @@
             修改
           </el-button>
           <el-button
-            v-if="row.status != 'published'"
-            size="mini"
-            type="success"
-            @click="handleModifyStatus(row, 'published')"
-          >
-            上架
-          </el-button>
-          <el-button
-            v-if="row.status != 'draft'"
-            size="mini"
-            @click="handleModifyStatus(row, 'draft')"
-          >
-            下架
-          </el-button>
-          <el-button
             v-if="row.status != 'deleted'"
             size="mini"
             type="danger"
             @click="handleDelete(row, $index)"
           >
-            删除
+            交易关闭
           </el-button>
         </template>
       </el-table-column>
@@ -329,7 +324,7 @@
 
 <script>
 import {
-  fetchList,
+  fetchOrderList,
   fetchPv,
   createArticle,
   updateArticle, fetchByName, fetchByType
@@ -337,8 +332,8 @@ import {
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import PanThumb from '@/components/PanThumb'
-const calendarTypeOptions = [{ key: '主食', display_name: '主食' }, { key: '配菜', display_name: '配菜' }, { key: '小吃', display_name: '小吃' }, { key: '饮品', display_name: '饮品' }, { key: '全部', display_name: '全部' }]
+
+const calendarTypeOptions = [{ key: '已支付', display_name: '已支付' }, { key: '未支付', display_name: '未支付' }, { key: '全部', display_name: '全部' }]
 
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
@@ -347,8 +342,8 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'ComplexTable',
-  components: { Pagination, PanThumb },
+  name: 'OrderTable',
+  components: { Pagination },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -365,7 +360,6 @@ export default {
   },
   data() {
     return {
-      picurl: {},
       tableKey: 0,
       list: null,
       total: 0,
@@ -417,16 +411,10 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then((response) => {
+      fetchOrderList(this.listQuery).then((response) => {
         this.list = response.data
         this.total = response.data.length
-        for (let i = 0; i < this.total; i++) {
-          if (i === 0) console.log(response)
-          if (this.list[i].item_url.search('baidu') !== -1) {
-            this.list[i].item_url =
-              'http://139.198.154.63:8081/forward?' + this.list[i].item_url
-          }
-        }
+
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -481,7 +469,7 @@ export default {
     sortByType() {
       this.listLoading = true
       if (this.listQuery.type === '全部') {
-        fetchList(this.listQuery).then((response) => {
+        fetchOrderList(this.listQuery).then((response) => {
           this.list = response.data
           this.total = response.data.length
           // Just to simulate the time of the request
