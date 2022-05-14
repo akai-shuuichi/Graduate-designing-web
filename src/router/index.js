@@ -70,7 +70,7 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-  {//左侧控制
+  { //左侧控制
     path: '/',
     component: Layout,
     redirect: '/index',
@@ -82,8 +82,8 @@ export const constantRoutes = [
         meta: { title: '数据', icon: 'dashboard', affix: true }
       }
     ]
-  },
-  //{
+  }
+  // {
   //   path: '/documentation',
   //   component: Layout,
   //   children: [
@@ -341,15 +341,15 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/table/dining-table',
+    path: '/table/inline-edit-table',
     component: Layout,
-    redirect: '/table/dining-table',
+    redirect: '/table/inline-edit-table',
     children: [
       {
-        path: 'dining-table',
-        component: () => import('@/views/table/dining-table'),
+        path: 'order-table',
+        component: () => import('@/views/table/inline-edit-table'),
         name: '餐厅信息',
-        meta: { title: '餐厅信息', icon: 'tab', affix: true }
+        meta: { title: '餐厅信息', icon: 'clipboard', affix: true }
       }
     ]
   },
