@@ -56,10 +56,12 @@ export function fetchByType(query) {
   })
 }
 export function fetchOrderList(query) {
-  const param = {}
+  console.log(query.importance)
+  const param = { shopid: query.importance, size: 20 }
   return request({
-    url: '/api/evaluation/query',
+    url: '/order/queryData',
     method: 'get',
     params: param
   })
 }
+

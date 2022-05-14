@@ -186,9 +186,9 @@ export const asyncRoutes = [
 
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
-  //chartsRouter,
+  // chartsRouter,
   // nestedRouter,
-   tableRouter,
+  tableRouter,
 
   // {
   //   path: '/example',
@@ -327,19 +327,32 @@ export const asyncRoutes = [
   //   ]
   // },
 
-  // {
-  //   path: '/pdf',
-  //   component: Layout,
-  //   redirect: '/pdf/index',
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/pdf/index'),
-  //       name: 'PDF',
-  //       meta: { title: 'PDF', icon: 'pdf' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/table/order-table',
+    component: Layout,
+    redirect: '/table/order-table',
+    children: [
+      {
+        path: 'order-table',
+        component: () => import('@/views/table/order-table'),
+        name: '订单管理',
+        meta: { title: '订单管理', icon: 'clipboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/table/dining-table',
+    component: Layout,
+    redirect: '/table/dining-table',
+    children: [
+      {
+        path: 'dining-table',
+        component: () => import('@/views/table/dining-table'),
+        name: '餐厅信息',
+        meta: { title: '餐厅信息', icon: 'tab', affix: true }
+      }
+    ]
+  },
   // {
   //   path: '/pdf/download',
   //   component: () => import('@/views/pdf/download'),

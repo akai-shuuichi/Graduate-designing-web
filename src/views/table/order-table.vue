@@ -3,37 +3,23 @@
     <div class="filter-container">
       <el-input
         v-model.trim="listQuery.title"
-        placeholder="请输入您要查询的订单的商家编号"
+        placeholder="查询订单编号"
         style="width: 200px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-select
         v-model="listQuery.importance"
-        placeholder="Imp"
-        clearable
-        style="width: 90px"
+        placeholder="商家编号"
+        style="width: 120px"
         class="filter-item"
+        @change="sortByShopid"
       >
         <el-option
           v-for="item in importanceOptions"
           :key="item"
           :label="item"
           :value="item"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
-        class="filter-item"
-        style="width: 130px"
-        @change="sortByType"
-      >
-        <el-option
-          v-for="item in calendarTypeOptions"
-          :key="item.key"
-          :label="item.display_name"
-          :value="item.key"
         />
       </el-select>
       <el-select
@@ -59,15 +45,6 @@
         搜索
       </el-button>
       <el-button
-        class="filter-item"
-        style="margin-left: 10px"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >
-        添加新菜品
-      </el-button>
-      <el-button
         v-waves
         :loading="downloadLoading"
         class="filter-item"
@@ -77,14 +54,6 @@
       >
         export
       </el-button>
-      <el-checkbox
-        v-model="showReviewer"
-        class="filter-item"
-        style="margin-left: 15px"
-        @change="tableKey = tableKey + 1"
-      >
-        reviewer
-      </el-checkbox>
     </div>
 
     <el-table
@@ -102,10 +71,10 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column> -->
-      <template slot-scope="{ row }">
-        <!-- <span>{{ row.item_url }}</span> -->
+      <!--      <template slot-scope="{ row }">
+        &lt;!&ndash; <span>{{ row.item_url }}</span> &ndash;&gt;
         <img :src="row.item_url" width="110" height="110">
-      </template>
+      </template>-->
       <el-table-column
         label="订单编号"
         sortable="custom"
@@ -118,47 +87,43 @@
       </el-table-column>
       <el-table-column
         label="订单名称"
-        sortable="custom"
         align="center"
         width="120"
       >
         <template slot-scope="{ row }">
-          <span>{{ row.order_name }}</span>
+          <span>{{ row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="商家编号"
+        align="center"
+        width="120"
+      >
+        <template slot-scope="{ row }">
+          <span>{{ row.shopid }}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="成交价格"
-        sortable="custom"
         align="center"
         width="60"
       >
         <template slot-scope="{row}">
-          <span>{{ row.order_price }}</span>
+          <span>{{ row.nowprice }}</span>
         </template>
 
       </el-table-column>
       <el-table-column
-        label="创建时间"
-        sortable="custom"
+        label="客户评价"
         align="center"
-        width="120"
+        width="160"
       >
-        <template slot-scope="{row}">
-          <span>{{ row.create_time }}</span>
+        <template slot-scope="{ row }">
+          <span>{{ row.user_talk }}</span>
         </template>
-
       </el-table-column>
-      <el-table-column
-        label="修改时间"
-        sortable="custom"
-        align="center"
-        width="120"
-      >
-        <template slot-scope="{row}">
-          <span>{{ row.update_time }}</span>
-        </template>
 
-      </el-table-column>
+
       <!--      <el-table-column label="Date" width="150px" align="center">-->
       <!--        <template slot-scope="{row}">-->
       <!--          <span>{{ row.createdata | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
@@ -201,12 +166,12 @@
       <el-table-column
         label="操作"
         align="center"
-        width="300"
+        width="260"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{ row, $index }">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            修改
+            详细信息
           </el-button>
           <el-button
             v-if="row.status != 'deleted'"
@@ -228,7 +193,7 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+        <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form
         ref="dataForm"
         :model="temp"
@@ -245,9 +210,9 @@
           <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
         </el-form-item> -->
         <el-form-item label="图例" prop="item_url">
-          <!-- <img :src="temp.item_url" height="120" width="120" /> -->
+<!--           <img :src="temp.item_url" height="120" width="120" />-->
           <el-upload
-            :data="picurl"
+            :data="temp.item_url"
             :multiple="false"
             :show-file-list="false"
             drag
@@ -257,9 +222,18 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="名称" prop="title">
-          <el-input v-model="temp.name" />
+          <el-tag>{{temp.name}}</el-tag>
         </el-form-item>
-        <el-form-item label="分类">
+        <el-form-item label="分类" prop="title">
+          <el-tag>{{temp.cate}}</el-tag>
+        </el-form-item>
+        <el-form-item label="商家编号" prop="title">
+          <el-tag>{{temp.shopid}}</el-tag>
+        </el-form-item>
+        <el-form-item label="交易价格" prop="title">
+          <el-tag>{{temp.nowprice}}</el-tag>
+        </el-form-item>
+<!--        <el-form-item label="分类">
           <el-select
             v-model="temp.status"
             class="filter-item"
@@ -272,18 +246,10 @@
               :value="item"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item label="推荐指数">
-          <el-rate
-            v-model="temp.importance"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            :max="3"
-            style="margin-top: 8px"
-          />
-        </el-form-item>
-        <el-form-item label="推荐语">
+        </el-form-item>-->
+        <el-form-item label="用户评价">
           <el-input
-            v-model="temp.context"
+            v-model="temp.user_talk"
             :autosize="{ minRows: 2, maxRows: 4 }"
             type="textarea"
             placeholder="Please input"
@@ -327,7 +293,7 @@ import {
   fetchOrderList,
   fetchPv,
   createArticle,
-  updateArticle, fetchByName, fetchByType
+  updateArticle, fetchByType
 } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -369,10 +335,11 @@ export default {
         limit: 20,
         importance: undefined,
         title: undefined,
+        size: 1,
         type: '',
         sort: '+id'
       },
-      importanceOptions: [1, 2, 3],
+      importanceOptions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
       calendarTypeOptions,
       sortOptions: [
         { label: 'ID Ascending', key: '+id' },
@@ -412,9 +379,34 @@ export default {
     getList() {
       this.listLoading = true
       fetchOrderList(this.listQuery).then((response) => {
-        this.list = response.data
-        this.total = response.data.length
-
+        // this.list = response.data
+        // this.total = response.data.length
+        const cateMap = []
+        const data = response.data
+        const idToMap = new Map()
+        const len = response.data.length
+        // eslint-disable-next-line no-empty
+        for (let i = 0; i < len; i++) {
+          const item = data[i]
+          for (let j = 0; j < item.length; j++) {
+            const objs = JSON.parse(item[j].order_items)
+            for (let k = 0; k < objs.length; k++) {
+              const obj = objs[k]
+              if (cateMap[obj.id] == null) cateMap[obj.id] = Array(len).fill(0)
+              idToMap.set(obj.id, obj)
+              cateMap[obj.id][i] += (obj.count)
+            }
+          }
+        }
+        const alldata = []
+        console.log(idToMap)
+        // eslint-disable-next-line no-empty
+        for (const o of idToMap.values()) {
+          alldata.push(o)
+        }
+        // eslint-disable-next-line no-empty
+        this.list = alldata
+        this.total = len
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -423,6 +415,7 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
+
       this.sortItem()
     },
     handleModifyStatus(row, status) {
@@ -438,26 +431,26 @@ export default {
         this.sortByID(order)
       }
     },
-    sortItem() {
-      this.listLoading = true
-      fetchByName(this.listQuery).then((response) => {
-        this.list = response.data
-        this.total = response.data.length
-        // if (this.listQuery.title) {
-        //   const newListData = []
-        //   this.list.filter(item => {
-        //     if (item.name.indexOf(this.listQuery.title) !== -1) {
-        //       newListData.push(item)
-        //     }
-        //   })
-        //   this.list = newListData
-        // }
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })
-    },
+    // sortItem() {
+    //   this.listLoading = true
+    //   fetchByName(this.listQuery).then((response) => {
+    //     this.list = response.data
+    //     this.total = response.data.length
+    //     // if (this.listQuery.title) {
+    //     //   const newListData = []
+    //     //   this.list.filter(item => {
+    //     //     if (item.name.indexOf(this.listQuery.title) !== -1) {
+    //     //       newListData.push(item)
+    //     //     }
+    //     //   })
+    //     //   this.list = newListData
+    //     // }
+    //     // Just to simulate the time of the request
+    //     setTimeout(() => {
+    //       this.listLoading = false
+    //     }, 1.5 * 1000)
+    //   })
+    // },
     sortByID(order) {
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
@@ -468,7 +461,15 @@ export default {
     },
     sortByType() {
       this.listLoading = true
-      if (this.listQuery.type === '全部') {
+      fetchOrderList(this.listQuery).then((response) => {
+        this.list = response.data
+        this.total = response.data.length
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+      /*  if (this.listQuery.type === '全部') {
         fetchOrderList(this.listQuery).then((response) => {
           this.list = response.data
           this.total = response.data.length
@@ -485,7 +486,7 @@ export default {
             this.listLoading = false
           }, 1.5 * 1000)
         })
-      }
+      } */
     },
     resetTemp() {
       this.temp = {
