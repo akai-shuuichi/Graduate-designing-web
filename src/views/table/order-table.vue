@@ -9,20 +9,6 @@
         @keyup.enter.native="handleFilter"
       />
       <el-select
-        v-model="listQuery.importance"
-        placeholder="商家编号"
-        style="width: 120px"
-        class="filter-item"
-        @change="sortByShopid"
-      >
-        <el-option
-          v-for="item in importanceOptions"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </el-select>
-      <el-select
         v-model="listQuery.sort"
         style="width: 140px"
         class="filter-item"
@@ -212,7 +198,7 @@
         <el-form-item label="图例" prop="item_url">
 <!--           <img :src="temp.item_url" height="120" width="120" />-->
           <el-upload
-            :data="temp.item_url"
+            :data="picurl"
             :multiple="false"
             :show-file-list="false"
             drag
@@ -222,16 +208,16 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="名称" prop="title">
-          <el-tag>{{temp.name}}</el-tag>
+          {{temp.name}}
         </el-form-item>
         <el-form-item label="分类" prop="title">
-          <el-tag>{{temp.cate}}</el-tag>
+          {{temp.cate}}
         </el-form-item>
         <el-form-item label="商家编号" prop="title">
-          <el-tag>{{temp.shopid}}</el-tag>
+          {{temp.shopid}}
         </el-form-item>
         <el-form-item label="交易价格" prop="title">
-          <el-tag>{{temp.nowprice}}</el-tag>
+          {{temp.nowprice}}
         </el-form-item>
 <!--        <el-form-item label="分类">
           <el-select
@@ -326,6 +312,7 @@ export default {
   },
   data() {
     return {
+      picurl: {},
       tableKey: 0,
       list: null,
       total: 0,
@@ -399,7 +386,6 @@ export default {
           }
         }
         const alldata = []
-        console.log(idToMap)
         // eslint-disable-next-line no-empty
         for (const o of idToMap.values()) {
           alldata.push(o)
@@ -415,8 +401,7 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
-
-      this.sortItem()
+      this.getList()
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -425,33 +410,34 @@ export default {
       })
       row.status = status
     },
-    sortChange(data) {
+    /* sortChange(data) {
       const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
+    }, */
+    sortItem() {
+      this.listLoading = true
+      fetchOrderList(this.listQuery).then((response) => {
+        this.list = response.data
+        this.total = response.data.length
+        // if (this.listQuery.title) {
+        //   const newListData = []
+        //   this.list.filter(item => {
+        //     if (item.name.indexOf(this.listQuery.title) !== -1) {
+        //       newListData.push(item)
+        //     }
+        //   })
+        //   this.list = newListData
+        // }
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
-    // sortItem() {
-    //   this.listLoading = true
-    //   fetchByName(this.listQuery).then((response) => {
-    //     this.list = response.data
-    //     this.total = response.data.length
-    //     // if (this.listQuery.title) {
-    //     //   const newListData = []
-    //     //   this.list.filter(item => {
-    //     //     if (item.name.indexOf(this.listQuery.title) !== -1) {
-    //     //       newListData.push(item)
-    //     //     }
-    //     //   })
-    //     //   this.list = newListData
-    //     // }
-    //     // Just to simulate the time of the request
-    //     setTimeout(() => {
-    //       this.listLoading = false
-    //     }, 1.5 * 1000)
-    //   })
-    // },
     sortByID(order) {
+      console.log(order)
       if (order === 'ascending') {
         this.listQuery.sort = '+id'
       } else {

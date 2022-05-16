@@ -349,7 +349,20 @@ export const asyncRoutes = [
         path: 'order-table',
         component: () => import('@/views/table/inline-edit-table'),
         name: '餐厅信息',
-        meta: { title: '餐厅信息', icon: 'clipboard', affix: true }
+        meta: { title: '餐厅信息', icon: 'tab', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/table/drag-table',
+    component: Layout,
+    redirect: '/table/drag-table',
+    children: [
+      {
+        path: 'order-table',
+        component: () => import('@/views/table/drag-table'),
+        name: '商家信息',
+        meta: { title: '商家信息', icon: 'example', affix: true }
       }
     ]
   },

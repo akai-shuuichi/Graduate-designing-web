@@ -1,39 +1,34 @@
 <template>
   <div class="app-container">
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
+      <el-table-column align="center" label="餐厅id" width="80">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column width="180px" align="center" label="Date">
+      <el-table-column align="center" label="餐厅楼层" width="80">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ row.floor }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="120px" align="center" label="负责人">
+        <template slot-scope="{row}">
+          <span>{{ row.name }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column width="120px" align="center" label="手机号">
+        <template slot-scope="{row}">
+          <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="Author">
-        <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+      <el-table-column class-name="status-col" label="任职状态" width="110">
+        <template >
+          <span>在职</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="100px" label="Importance">
-        <template slot-scope="{row}">
-          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="300px" label="Title">
+      <el-table-column min-width="300px" label="餐厅负责人信息">
         <template slot-scope="{row}">
           <template v-if="row.edit">
             <el-input v-model="row.title" class="edit-input" size="small" />
@@ -44,14 +39,14 @@
               type="warning"
               @click="cancelEdit(row)"
             >
-              cancel
+              取消
             </el-button>
           </template>
-          <span v-else>{{ row.title }}</span>
+          <span v-else>{{ row.originalTitle}}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="120">
+      <el-table-column align="center" label="操作" width="120">
         <template slot-scope="{row}">
           <el-button
             v-if="row.edit"
@@ -60,7 +55,7 @@
             icon="el-icon-circle-check-outline"
             @click="confirmEdit(row)"
           >
-            Ok
+            确认
           </el-button>
           <el-button
             v-else
@@ -69,7 +64,7 @@
             icon="el-icon-edit"
             @click="row.edit=!row.edit"
           >
-            Edit
+            编辑
           </el-button>
         </template>
       </el-table-column>
@@ -78,11 +73,11 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { fetchDiningList } from '@/api/article'
 
 export default {
   name: 'InlineEditTable',
-  filters: {
+  /* filters: {
     statusFilter(status) {
       const statusMap = {
         published: 'success',
@@ -91,9 +86,14 @@ export default {
       }
       return statusMap[status]
     }
-  },
+  }, */
   data() {
     return {
+      title: undefined,
+      edit: false,
+      originalTitle: undefined,
+      tablekey: 0,
+      total: 0,
       list: null,
       listLoading: true,
       listQuery: {
@@ -108,20 +108,33 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true
-      const { data } = await fetchList(this.listQuery)
-      const items = data.items
+      fetchDiningList(this.listQuery).then((response) => {
+        this.list = response.data
+        this.total = response.data.length
+        for (let i = 0; i < this.total; i++) {
+          this.list[i].edit = false
+          this.list[i].title = this.list[i].name + ': ' + this.list[i].phone
+          this.list[i].originalTitle = this.list[i].title
+        }
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+      /* const items = data.items
+      console.log(items)
       this.list = items.map(v => {
         this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
         v.originalTitle = v.title //  will be used when user click the cancel botton
         return v
-      })
+      }) */
       this.listLoading = false
     },
     cancelEdit(row) {
+      console.log(row)
       row.title = row.originalTitle
       row.edit = false
       this.$message({
-        message: 'The title has been restored to the original value',
+        message: '已取消修改值',
         type: 'warning'
       })
     },
@@ -129,7 +142,7 @@ export default {
       row.edit = false
       row.originalTitle = row.title
       this.$message({
-        message: 'The title has been edited',
+        message: '已保存修改值',
         type: 'success'
       })
     }
