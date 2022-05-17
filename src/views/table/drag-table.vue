@@ -8,15 +8,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column min-width="300px" label="Title">
+      <el-table-column min-width="300px" label="楼层">
         <template slot-scope="{row}">
-          <span>{{ row.title }}</span>
+          <span>{{ row.floorid }}层</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="110px" align="center" label="Author">
+      <el-table-column width="110px" align="center" label="商铺负责人">
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
 
@@ -26,17 +26,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Readings" width="95">
+      <el-table-column align="center" label="手机号码" width="95">
         <template slot-scope="{row}">
-          <span>{{ row.pageviews }}</span>
+          <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
+      <el-table-column class-name="status-col" label="入职状态" width="110">
+        <template >
+          <span>在职</span>
         </template>
       </el-table-column>
 
@@ -56,25 +54,15 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { fetchList, fetchShoperList } from '@/api/article'
 import Sortable from 'sortablejs'
 
 export default {
   name: 'DragTable',
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
   data() {
     return {
       list: null,
-      total: null,
+      total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
@@ -91,10 +79,11 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true
-      const { data } = await fetchList(this.listQuery)
-      this.list = data.items
-      this.total = data.total
+      const { data } = await fetchShoperList(this.listQuery)
+      this.list = data
+      this.total = data.length
       this.listLoading = false
+      console.log(this.list)
       this.oldList = this.list.map(v => v.id)
       this.newList = this.oldList.slice()
       this.$nextTick(() => {

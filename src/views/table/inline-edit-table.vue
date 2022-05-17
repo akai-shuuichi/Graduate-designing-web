@@ -42,7 +42,7 @@
               取消
             </el-button>
           </template>
-          <span v-else>{{ row.originalTitle}}</span>
+          <span v-else>{{ row.title}}</span>
         </template>
       </el-table-column>
 
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { fetchDiningList } from '@/api/article'
+import { fetchDiningList, updateDining } from '@/api/article'
 
 export default {
   name: 'InlineEditTable',
@@ -108,7 +108,14 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true
-      fetchDiningList(this.listQuery).then((response) => {
+      const { data } = await fetchDiningList(this.listQuery)
+      this.list = data.map(v => {
+        this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
+        v.title = v.name + ': ' + v.phone
+        v.originalTitle = v.title //  will be used when user click the cancel botton
+        return v
+      })
+      /* fetchDiningList(this.listQuery).then((response) => {
         this.list = response.data
         this.total = response.data.length
         for (let i = 0; i < this.total; i++) {
@@ -119,18 +126,10 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
-      })
-      /* const items = data.items
-      console.log(items)
-      this.list = items.map(v => {
-        this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
-        v.originalTitle = v.title //  will be used when user click the cancel botton
-        return v
       }) */
       this.listLoading = false
     },
     cancelEdit(row) {
-      console.log(row)
       row.title = row.originalTitle
       row.edit = false
       this.$message({
@@ -141,6 +140,16 @@ export default {
     confirmEdit(row) {
       row.edit = false
       row.originalTitle = row.title
+      const name = row.title.split(': ')[0].trim()
+      const phone = row.title.split(': ')[1].trim()
+      row.name = name
+      row.phone = phone
+      const temp = { 'id': row.id, 'floor': row.floor, 'name': name, 'phone': phone }
+      // 等待修改的接口
+      updateDining(temp).then(resp => {
+        const index = this.list.findIndex((v) => v.id === row.id)
+        this.list.splice(index, 1, row)
+      })
       this.$message({
         message: '已保存修改值',
         type: 'success'

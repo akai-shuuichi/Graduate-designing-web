@@ -73,4 +73,25 @@ export function fetchDiningList(query) {
     data: query
   })
 }
+export function fetchShoperList(query) {
+  return request({
+    url: '/misc/shoper_info',
+    method: 'get',
+    data: query
+  })
+}
+export function updateDining(data) {
+  return request({
+    url: '/misc/updatedining_info',
+    method: 'get',
+    params: data
+  })
+}
+export function updatesShoper(data) {
+  return request({
+    url: '/misc/updateasdkjfl',
+    method: 'get',
+    data
+  })
+}
 

@@ -366,6 +366,19 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/table/chat',
+    component: Layout,
+    redirect: '/table/chat',
+    children: [
+      {
+        path: 'chat',
+        component: () => import('@/views/table/chat'),
+        name: '交流空间',
+        meta: { title: '交流空间', icon: 'peoples', affix: true }
+      }
+    ]
+  },
   // {
   //   path: '/pdf/download',
   //   component: () => import('@/views/pdf/download'),
