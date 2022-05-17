@@ -8,13 +8,13 @@
         </template>
       </el-table-column>
 
-      <el-table-column min-width="300px" label="楼层">
+      <el-table-column width="150px" align="center" label="楼层">
         <template slot-scope="{row}">
           <span>{{ row.floorid }}层</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="110px" align="center" label="商铺负责人">
+      <el-table-column width="160px" align="center" label="商铺负责人">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
@@ -26,19 +26,19 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="手机号码" width="95">
+      <el-table-column align="center" label="手机号码" width="225">
         <template slot-scope="{row}">
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="入职状态" width="110">
+      <el-table-column class-name="status-col" label="入职状态" width="150">
         <template >
           <span>在职</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Drag" width="80">
+      <el-table-column align="center" label="Drag" width="120">
         <template slot-scope="{}">
           <svg-icon class="drag-handler" icon-class="drag" />
         </template>
@@ -61,14 +61,14 @@ export default {
   name: 'DragTable',
   data() {
     return {
-      list: null,
+      list: [],
       total: 0,
       listLoading: true,
       listQuery: {
         page: 1,
         limit: 10
       },
-      sortable: null,
+      sortable: true,
       oldList: [],
       newList: []
     }
@@ -83,7 +83,6 @@ export default {
       this.list = data
       this.total = data.length
       this.listLoading = false
-      console.log(this.list)
       this.oldList = this.list.map(v => v.id)
       this.newList = this.oldList.slice()
       this.$nextTick(() => {
