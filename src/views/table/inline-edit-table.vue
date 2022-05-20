@@ -1,34 +1,34 @@
 <template>
   <div class="app-container">
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="餐厅id" width="80">
+      <el-table-column align="center" label="商家编号" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="餐厅楼层" width="80">
+      <el-table-column align="center" label="餐厅楼层" width="100">
         <template slot-scope="{row}">
-          <span>{{ row.floor }}</span>
+          <span>{{ row.floorid }}层</span>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center" label="负责人">
+      <el-table-column width="180px" align="center" label="商铺负责人">
         <template slot-scope="{row}">
           <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column width="120px" align="center" label="手机号">
+      <el-table-column width="150px" align="center" label="手机号">
         <template slot-scope="{row}">
           <span>{{ row.phone }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column class-name="status-col" label="任职状态" width="110">
+      <el-table-column class-name="status-col" label="任职状态" width="150">
         <template >
           <span>在职</span>
         </template>
       </el-table-column>
 
-      <el-table-column min-width="300px" label="餐厅负责人信息">
+      <el-table-column min-width="200px" align="center" label="餐厅成员信息">
         <template slot-scope="{row}">
           <template v-if="row.edit">
             <el-input v-model="row.title" class="edit-input" size="small" />
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { fetchDiningList, updateDining } from '@/api/article'
+import { fetchDiningList, fetchShoperList, updateDining } from '@/api/article'
 
 export default {
   name: 'InlineEditTable',
@@ -108,10 +108,10 @@ export default {
   methods: {
     async getList() {
       this.listLoading = true
-      const { data } = await fetchDiningList(this.listQuery)
+      const { data } = await fetchShoperList(this.listQuery)
       this.list = data.map(v => {
         this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
-        v.title = v.name + ': ' + v.phone
+        v.title = v.name + ': ' + v.phone + ': ' +v.staff
         v.originalTitle = v.title //  will be used when user click the cancel botton
         return v
       })
@@ -142,14 +142,15 @@ export default {
       row.originalTitle = row.title
       const name = row.title.split(': ')[0].trim()
       const phone = row.title.split(': ')[1].trim()
+      const staff = row.title.split(': ')[2].trim()
       row.name = name
       row.phone = phone
       const temp = { 'id': row.id, 'floor': row.floor, 'name': name, 'phone': phone }
       // 等待修改的接口
-      updateDining(temp).then(resp => {
+      /* updateDining(temp).then(resp => {
         const index = this.list.findIndex((v) => v.id === row.id)
         this.list.splice(index, 1, row)
-      })
+      }) */
       this.$message({
         message: '已保存修改值',
         type: 'success'

@@ -57,13 +57,11 @@ export function fetchByType(query) {
 }
 export function fetchOrderList(query) {
   const pa = query.title === 1 ? 1 : query.title
-  console.log(pa)
   const param = { shopId: pa, size: 20 }
   return request({
     url: '/order/queryData',
     method: 'get',
-    params: param,
-    data: query
+    params: param
   })
 }
 export function fetchDiningList(query) {

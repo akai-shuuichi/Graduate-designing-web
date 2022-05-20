@@ -97,7 +97,15 @@
         <template slot-scope="{row}">
           <span>{{ row.nowprice }}</span>
         </template>
-
+      </el-table-column>
+      <el-table-column
+        label="交易时间"
+        align="center"
+        width="280"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.update_time }}</span>
+        </template>
       </el-table-column>
       <el-table-column
         label="客户评价"
@@ -370,6 +378,7 @@ export default {
         // this.total = response.data.length
         const cateMap = []
         const data = response.data
+        console.log(response.data)
         const idToMap = new Map()
         const len = response.data.length
         // eslint-disable-next-line no-empty
