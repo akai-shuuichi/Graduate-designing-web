@@ -174,7 +174,7 @@
         class-name="small-padding fixed-width"
       >
         <template slot-scope="{ row, $index }">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="handleUpdate(row,$index)">
             详细信息
           </el-button>
           <el-button
@@ -198,12 +198,19 @@
     />
 
         <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :key>
-          <el-table :data="list[0].order_items" border fit>
+          <el-table :data="list[nowindex].order_items" border fit>
             <el-table-column
               label="菜品图片"
               align="center">
               <template slot-scope="{ row }">
-                {{row}}
+                {{row.name}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="菜品1"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row.count}}
               </template>
             </el-table-column>
           </el-table>
@@ -369,6 +376,7 @@ export default {
         // timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         // title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
+      nowindex:0,
       downloadLoading: false
     }
   },
@@ -523,7 +531,8 @@ export default {
         }
       })
     },
-    handleUpdate(row) {
+    handleUpdate(row,index) {
+      this.nowindex=index
       this.temp = Object.assign({}, row) // copy obj
       this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
