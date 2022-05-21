@@ -8,7 +8,7 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-select
+<!--      <el-select
         v-model="listQuery.importance"
         placeholder="Imp"
         clearable
@@ -21,7 +21,7 @@
           :label="item"
           :value="item"
         />
-      </el-select>
+      </el-select>-->
       <el-select
         v-model="listQuery.type"
         placeholder="类型"
@@ -67,7 +67,7 @@
       >
         添加新菜品
       </el-button>
-      <el-button
+<!--      <el-button
         v-waves
         :loading="downloadLoading"
         class="filter-item"
@@ -76,15 +76,15 @@
         @click="handleDownload"
       >
         export
-      </el-button>
-      <el-checkbox
+      </el-button>-->
+<!--      <el-checkbox
         v-model="showReviewer"
         class="filter-item"
         style="margin-left: 15px"
         @change="tableKey = tableKey + 1"
       >
         reviewer
-      </el-checkbox>
+      </el-checkbox>-->
     </div>
 
     <el-table
@@ -105,7 +105,6 @@
 
       <el-table-column
         label="菜品图片"
-        sortable="custom"
         align="center"
         width="120"
       >
@@ -116,7 +115,6 @@
       </el-table-column>
       <el-table-column
         label="菜品名称"
-        sortable="custom"
         align="center"
         width="120"
       >
@@ -126,7 +124,6 @@
       </el-table-column>
       <el-table-column
         label="介绍语"
-        sortable="custom"
         align="center"
         width="120"
       >
@@ -384,7 +381,8 @@ export default {
         { label: 'ID Ascending', key: '+id' },
         { label: 'ID Descending', key: '-id' }
       ],
-      statusOptions: ['published', 'draft', 'deleted'],
+      // statusOptions: ['published', 'draft', 'deleted'],
+      statusOptions: ['主食','配菜','小吃','饮品'],
       showReviewer: false,
       temp: {
         id: undefined,
@@ -393,7 +391,7 @@ export default {
         timestamp: new Date(),
         title: '',
         type: '',
-        status: 'published'
+        status: '主食'
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -455,15 +453,15 @@ export default {
       fetchByName(this.listQuery).then((response) => {
         this.list = response.data
         this.total = response.data.length
-        // if (this.listQuery.title) {
-        //   const newListData = []
-        //   this.list.filter(item => {
-        //     if (item.name.indexOf(this.listQuery.title) !== -1) {
-        //       newListData.push(item)
-        //     }
-        //   })
-        //   this.list = newListData
-        // }
+        if (this.listQuery.title) {
+          const newListData = []
+          this.list.filter(item => {
+            if (item.name.indexOf(this.listQuery.title) !== -1) {
+              newListData.push(item)
+            }
+          })
+          this.list = newListData
+        }
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false

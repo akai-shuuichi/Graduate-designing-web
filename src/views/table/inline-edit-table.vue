@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import { fetchDiningList, fetchShoperList, updateDining } from '@/api/article'
+import { fetchDiningList, fetchShoperList, updateDining, updatesShoper } from '@/api/article'
 
 export default {
   name: 'InlineEditTable',
@@ -140,12 +140,16 @@ export default {
     confirmEdit(row) {
       row.edit = false
       row.originalTitle = row.title
-      const name = row.title.split(': ')[0].trim()
-      const phone = row.title.split(': ')[1].trim()
-      const staff = row.title.split(': ')[2].trim()
+      const name = row.title.split(':')[0].trim()
+      const phone = row.title.split(':')[1].trim()
+      const staff = row.title.split(':')[2].trim()
       row.name = name
       row.phone = phone
-      const temp = { 'id': row.id, 'floor': row.floor, 'name': name, 'phone': phone }
+      const temp = { 'id': row.id, 'floor': row.floor, 'name': name, 'phone': phone, 'staff': staff}
+      updatesShoper(temp).then(resp => {
+        const index = this.list.findIndex((v) => v.id ===row.id)
+        this.list.splice(index,1,row)
+      })
       // 等待修改的接口
       /* updateDining(temp).then(resp => {
         const index = this.list.findIndex((v) => v.id === row.id)

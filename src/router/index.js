@@ -82,7 +82,20 @@ export const constantRoutes = [
         meta: { title: '数据', icon: 'dashboard', affix: true }
       }
     ]
-  }
+  },
+  {
+    path: '/permission/directive',
+    component: Layout,
+    redirect: '/permission/directive',
+    children: [
+      {
+        path: 'directive',
+        component: () => import('@/views/permission/directive'),
+        name: '角色权限',
+        meta: { title: '角色权限', icon: 'people', affix: true }
+      }
+    ]
+  },
   // {
   //   path: '/documentation',
   //   component: Layout,
@@ -326,6 +339,7 @@ export const asyncRoutes = [
   //     }
   //   ]
   // },
+
 
   {
     path: '/table/order-table',

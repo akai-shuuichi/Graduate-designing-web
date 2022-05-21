@@ -30,7 +30,7 @@
       >
         搜索
       </el-button>
-      <el-button
+<!--      <el-button
         v-waves
         :loading="downloadLoading"
         class="filter-item"
@@ -39,7 +39,7 @@
         @click="handleDownload"
       >
         export
-      </el-button>
+      </el-button>-->
     </div>
 
     <el-table
@@ -77,7 +77,7 @@
         width="120"
       >
         <template slot-scope="{ row }">
-          <span>{{ row.name }}</span>
+          <span>{{ row.order_name }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -86,7 +86,16 @@
         width="120"
       >
         <template slot-scope="{ row }">
-          <span>{{ row.shopid }}</span>
+          <span>{{ row.shop_id  }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="用户编号"
+        align="center"
+        width="120"
+      >
+        <template slot-scope="{ row }">
+          <span>{{ row.user_id  }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -95,7 +104,7 @@
         width="60"
       >
         <template slot-scope="{row}">
-          <span>{{ row.nowprice }}</span>
+          <span>{{ row.order_price }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -104,25 +113,26 @@
         width="280"
       >
         <template slot-scope="{row}">
-          <span>{{ row.update_time }}</span>
+          <span>{{ row.update_time | dateFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        label="客户评价"
+        label="交易状态"
         align="center"
-        width="160"
+        width="80"
       >
-        <template slot-scope="{ row }">
-          <span>{{ row.user_talk }}</span>
+        <template slot-scope="{row}">
+          <span>{{ row.ispay | statusFilter }}</span>
         </template>
       </el-table-column>
 
 
-      <!--      <el-table-column label="Date" width="150px" align="center">-->
-      <!--        <template slot-scope="{row}">-->
-      <!--          <span>{{ row.createdata | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
+
+<!--            <el-table-column label="Date" width="150px" align="center">
+              <template slot-scope="{row}">
+                <span>{{ row.createdata | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+              </template>
+            </el-table-column>-->
       <!--      <el-table-column label="Title" min-width="150px">-->
       <!--        <template slot-scope="{row}">-->
       <!--          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>-->
@@ -187,24 +197,24 @@
       @pagination="getList"
     />
 
-        <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
+        <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :key>
+          <el-table :data="list[0].order_items" border fit>
+            <el-table-column
+              label="菜品图片"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row}}
+              </template>
+            </el-table-column>
+          </el-table>
+<!--      <el-form
         ref="dataForm"
         :model="temp"
         label-position="left"
         label-width="70px"
         style="width: 400px; margin-left: 50px"
       >
-        <!-- <el-form-item label="Type" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-          </el-select>
-        </el-form-item> -->
-        <!-- <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item> -->
         <el-form-item label="图例" prop="item_url">
-<!--           <img :src="temp.item_url" height="120" width="120" />-->
           <el-upload
             :data="picurl"
             :multiple="false"
@@ -212,7 +222,7 @@
             drag
             action="http://127.0.0.1:8081/api/upload"
           >
-            <img :src="temp.item_url" height="100%" width="100%">
+            <img :src="temp.order_items" height="100%" width="100%">
           </el-upload>
         </el-form-item>
         <el-form-item label="名称" prop="title">
@@ -227,20 +237,6 @@
         <el-form-item label="交易价格" prop="title">
           {{temp.nowprice}}
         </el-form-item>
-<!--        <el-form-item label="分类">
-          <el-select
-            v-model="temp.status"
-            class="filter-item"
-            placeholder="分类"
-          >
-            <el-option
-              v-for="item in statusOptions"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
-        </el-form-item>-->
         <el-form-item label="用户评价">
           <el-input
             v-model="temp.user_talk"
@@ -249,15 +245,16 @@
             placeholder="Please input"
           />
         </el-form-item>
-      </el-form>
+      </el-form>-->
+
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false"> Cancel </el-button>
-        <el-button
+        <el-button @click="dialogFormVisible = false"> 取消 </el-button>
+<!--        <el-button
           type="primary"
           @click="dialogStatus === 'create' ? createData() : updateData()"
         >
           Confirm
-        </el-button>
+        </el-button>-->
       </div>
     </el-dialog>
 
@@ -307,15 +304,22 @@ export default {
   directives: { waves },
   filters: {
     statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
+      if(status === 1)return '已支付'
+      else if(status === 0)return '未支付'
+      return '交易关闭'
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
+    },
+    dateFilter(date){
+      date = new Date(date)
+      const Y = date.getFullYear() + '-';
+      const M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+      const D = date.getDate() + ' ';
+      const h = date.getHours() + ':';
+      const m = date.getMinutes() + ':';
+      const s = date.getSeconds();
+      return Y+M+D+h+m+s
     }
   },
   data() {
@@ -328,6 +332,7 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
+        shopid:1,
         importance: undefined,
         title: undefined,
         size: 1,
@@ -376,33 +381,30 @@ export default {
       fetchOrderList(this.listQuery).then((response) => {
         // this.list = response.data
         // this.total = response.data.length
-        const cateMap = []
+        const catedata = []
         const data = response.data
-        console.log(response.data)
         const idToMap = new Map()
         const len = response.data.length
         // eslint-disable-next-line no-empty
         for (let i = 0; i < len; i++) {
-          const item = data[i]
+          let item = data[i]
           for (let j = 0; j < item.length; j++) {
-            const objs = JSON.parse(item[j].order_items)
-            for (let k = 0; k < objs.length; k++) {
-              const obj = objs[k]
-              if (cateMap[obj.id] == null) cateMap[obj.id] = Array(len).fill(0)
+            let objs = item[j]
+            // console.log(objs.order_items)
+            objs.order_items = JSON.parse(objs.order_items)
+            /* for (let k = 0; k < lover.length; k++) {
+              const obj = lover[k]
+              // if (obj !== null)console.log(obj)
               idToMap.set(obj.id, obj)
-              cateMap[obj.id][i] += (obj.count)
-            }
+            } */
+            console.log(objs.order_items)
+            if(objs !== null)catedata.push(objs)
+            // idToMap.set(objs.id, objs)
           }
         }
-        const alldata = []
-        // eslint-disable-next-line no-empty
-        for (const o of idToMap.values()) {
-          alldata.push(o)
-        }
-        // eslint-disable-next-line no-empty
-        this.list = alldata
+        this.list = catedata
+        console.log(this.list)
         this.total = len
-        // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)

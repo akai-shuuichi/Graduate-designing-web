@@ -87,9 +87,17 @@ export function updateDining(data) {
 }
 export function updatesShoper(data) {
   return request({
-    url: '/misc/updateasdkjfl',
+    url: '/misc/updateshoper_info',
     method: 'get',
-    data
+    params: data
+  })
+}
+export function fetchShopById(query) {
+  return request({
+    url: '/shop/queryByshopid',
+    method: 'get',
+    code: id,
+    data: data
   })
 }
 
