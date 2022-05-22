@@ -4,7 +4,7 @@ export function fetchList(query) {
   return request({
     url: '/shopitem/query',
     method: 'get',
-    data: query
+    params: query
   })
 }
 
