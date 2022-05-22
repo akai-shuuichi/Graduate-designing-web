@@ -72,7 +72,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="订单名称"
+        label="商家名称"
         align="center"
         width="120"
       >
@@ -200,17 +200,52 @@
         <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :key>
           <el-table :data="list[nowindex].order_items" border fit>
             <el-table-column
-              label="菜品图片"
+              label="商家编号"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row.shopid}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="菜品编号"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row.id}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="菜品名称"
               align="center">
               <template slot-scope="{ row }">
                 {{row.name}}
               </template>
             </el-table-column>
             <el-table-column
-              label="菜品1"
+              label="菜品种类"
               align="center">
               <template slot-scope="{ row }">
-                {{row.count}}
+                {{row.cate}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="原价"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row.baseprice}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="现价"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row.nowprice}}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="用户评价"
+              align="center">
+              <template slot-scope="{ row }">
+                {{row.user_talk | commentFilter }}
               </template>
             </el-table-column>
           </el-table>
@@ -314,6 +349,11 @@ export default {
       if(status === 1)return '已支付'
       else if(status === 0)return '未支付'
       return '交易关闭'
+    },
+    commentFilter(comment){
+      const leng = comment.length
+      comment = comment.trim().substring(1,leng-2)
+      return comment
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
