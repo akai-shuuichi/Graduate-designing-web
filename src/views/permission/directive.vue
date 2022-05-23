@@ -1,111 +1,184 @@
 <template>
-  <div class="app-container">
-    <switch-roles @change="handleRolesChange" />
-    <div :key="key" style="margin-top:30px;">
-      <div>
-        <span v-permission="['admin']" class="permission-alert">
-          Only
-          <el-tag class="permission-tag" size="small">admin</el-tag> can see this
-        </span>
-        <el-tag v-permission="['admin']" class="permission-sourceCode" type="info">
-          v-permission="['admin']"
-        </el-tag>
-      </div>
-
-      <div>
-        <span v-permission="['editor']" class="permission-alert">
-          Only
-          <el-tag class="permission-tag" size="small">editor</el-tag> can see this
-        </span>
-        <el-tag v-permission="['editor']" class="permission-sourceCode" type="info">
-          v-permission="['editor']"
-        </el-tag>
-      </div>
-
-      <div>
-        <span v-permission="['admin','editor']" class="permission-alert">
-          Both
-          <el-tag class="permission-tag" size="small">admin</el-tag> and
-          <el-tag class="permission-tag" size="small">editor</el-tag> can see this
-        </span>
-        <el-tag v-permission="['admin','editor']" class="permission-sourceCode" type="info">
-          v-permission="['admin','editor']"
-        </el-tag>
-      </div>
+  <div class="showImg" >
+    <img  @mouseover="changeInterval(true)" 
+         @mouseleave="changeInterval(false)"  
+         v-for="(item) in imgArr" 
+         :key="item.id"
+         :src="item.url" 
+         alt="暂无图片" 
+         v-show="item.id===currentIndex" 
+         >
+    <div  @click="clickIcon('up')"   class="iconDiv icon-left"> 
+        <i class="el-icon-caret-left"></i>
     </div>
-
-    <div :key="'checkPermission'+key" style="margin-top:60px;">
-      <aside>
-        In some cases, using v-permission will have no effect. For example: Element-UI's Tab component or el-table-column and other scenes that dynamically render dom. You can only do this with v-if.
-        <br> e.g.
-      </aside>
-
-      <el-tabs type="border-card" style="width:550px;">
-        <el-tab-pane v-if="checkPermission(['admin'])" label="Admin">
-          Admin can see this
-          <el-tag class="permission-sourceCode" type="info">
-            v-if="checkPermission(['admin'])"
-          </el-tag>
-        </el-tab-pane>
-
-        <el-tab-pane v-if="checkPermission(['editor'])" label="Editor">
-          Editor can see this
-          <el-tag class="permission-sourceCode" type="info">
-            v-if="checkPermission(['editor'])"
-          </el-tag>
-        </el-tab-pane>
-
-        <el-tab-pane v-if="checkPermission(['admin','editor'])" label="Admin-OR-Editor">
-          Both admin or editor can see this
-          <el-tag class="permission-sourceCode" type="info">
-            v-if="checkPermission(['admin','editor'])"
-          </el-tag>
-        </el-tab-pane>
-      </el-tabs>
+    <div  @click="clickIcon('down')"  class="iconDiv icon-right">
+        <i class="el-icon-caret-right"></i>
     </div>
-  </div>
+    <div class="banner-circle">
+        <ul>
+            <li @click="changeImg(item.id)" 
+                v-for="(item) in imgArr" 
+                :key="item.id"
+                :class="item.id===currentIndex? 'active': '' "
+             ></li>
+        </ul>
+    </div>
+</div>
+
 </template>
 
 <script>
 import permission from '@/directive/permission/index.js' // 权限判断指令
 import checkPermission from '@/utils/permission' // 权限判断函数
 import SwitchRoles from './components/SwitchRoles'
-
+import request from '@/utils/request'
 export default {
   name: 'DirectivePermission',
   components: { SwitchRoles },
   directives: { permission },
-  data() {
-    return {
-      key: 1 // 为了能每次切换权限的时候重新初始化指令
-    }
-  },
-  methods: {
-    checkPermission,
-    handleRolesChange() {
-      this.key++
-    }
-  }
+  		data(){
+			return {
+				currentIndex :0,//当前所在图片下标
+				timer:null,//定时轮询
+				imgArr:[
+					
+				]
+			}
+		},
+		methods:{
+			//开启定时器
+			startInterval(){
+				// 事件里定时器应该先清除在设置，防止多次点击直接生成多个定时器
+				clearInterval(this.timer);
+				this.timer = setInterval(()=>{
+					this.currentIndex++;
+					if(this.currentIndex > this.imgArr.length-1){
+						this.currentIndex = 0
+					}
+				},3000)
+			},
+			// 点击左右箭头
+			clickIcon(val){
+				if(val==='down'){
+					this.currentIndex++;
+					if(this.currentIndex===this.imgArr.length){
+						this.currentIndex = 0;
+					}
+				}else{
+					/* 第一种写法
+					this.currentIndex--;
+					if(this.currentIndex < 0){
+						this.currentIndex = this.imgArr.length-1;
+					} */
+					// 第二种写法
+					if(this.currentIndex === 0){
+						this.currentIndex = this.imgArr.length;
+					}
+					this.currentIndex--;
+				}
+			},
+			// 点击控制圆点
+			changeImg(index){
+				this.currentIndex = index
+			},
+			//鼠标移入移出控制
+			changeInterval(val){
+				if(val){
+					clearInterval(this.timer)
+				}else{
+					this.startInterval()
+				}
+			}
+		},
+		//进入页面后启动定时轮询
+		mounted(){
+       request({
+        url: '/activity/bestfoodBycount',
+        method: 'get',
+      }).then((res)=>{
+        let data=res.data;
+        let len=data.length;
+        for(let i=0;i<len;i++){
+            this.imgArr.push({id:i,url:'http://139.198.154.63:8081/forward?'+data[i].item_url})
+        }
+      })
+			this.startInterval()
+		}
+	
+
 }
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  ::v-deep .permission-alert {
-    width: 320px;
-    margin-top: 15px;
-    background-color: #f0f9eb;
-    color: #67c23a;
-    padding: 8px 16px;
-    border-radius: 4px;
-    display: inline-block;
-  }
-  ::v-deep .permission-sourceCode {
-    margin-left: 15px;
-  }
-  ::v-deep .permission-tag {
-    background-color: #ecf5ff;
-  }
+* {
+	padding: 0;
+	margin: 0;
 }
+/* 清除li前面的圆点 */
+li {
+	list-style-type: none;
+}
+.showImg{
+	position: relative;
+	width: 60%;
+	margin: 100px auto;
+	overflow: hidden;
+}
+/* 轮播图片 */
+.showImg img{
+	width: 100%;
+	height: 100%;
+}
+
+/* 箭头图标 */
+.iconDiv{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 30px;
+	height: 30px;
+	border: 1px solid #666;
+	border-radius: 15px;
+	background-color: rgba(125,125,125,.2);
+	line-height: 30px;
+	text-align: center;
+	font-size: 25px;
+	cursor: pointer;
+}
+.iconDiv:hover{
+	background-color: white;
+}
+.icon-left{
+	left: 10px;
+}
+.icon-right{
+	right: 10px;
+}
+
+/* 控制圆点 */
+.banner-circle{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 20px;
+}
+.banner-circle ul{
+	margin: 0 50px;
+	height: 100%;
+	text-align: right;
+}
+.banner-circle ul li{
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin: 0 5px;
+	border-radius: 7px;
+	background-color: rgba(125,125,125,.8);
+	cursor: pointer;
+}
+.active{
+	background-color: black !important; 
+}
+
 </style>
 
