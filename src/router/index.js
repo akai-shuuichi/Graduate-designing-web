@@ -83,19 +83,19 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  // {
-  //   path: '/permission/directive',
-  //   component: Layout,
-  //   redirect: '/permission/directive',
-  //   children: [
-  //     {
-  //       path: 'directive',
-  //       component: () => import('@/views/permission/directive'),
-  //       name: '角色权限',
-  //       meta: { title: '角色权限', icon: 'people', affix: true }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/permission/directive'),
+        name: '角色权限',
+        meta: { title: '角色权限', icon: 'people', affix: true }
+      }
+    ]
+  },
   // {
   //   path: '/documentation',
   //   component: Layout,
@@ -143,9 +143,9 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   { //左侧控制
-    path: '/',
+    path: '/data',
     component: Layout,
-    redirect: '/index',
+    redirect: '/data',
     children: [
       {
         path: 'index',
