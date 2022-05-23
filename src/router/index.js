@@ -211,6 +211,31 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/table/zhiliang1',
+    component: Layout,
+    redirect: '/table/zhiliang1',
+    children: [
+      {
+        path: 'chat1',
+        component: () => import('@/views/20220523/zhiliang1'),
+        name: '质量评价',
+        meta: { title: '质量评价', icon: 'peoples', affix: true ,roles:['2']}
+      }
+    ]
+  },  {
+    path: '/table/zhiliang2',
+    component: Layout,
+    redirect: '/table/zhiliang2',
+    children: [
+      {
+        path: 'chat2',
+        component: () => import('@/views/20220523/zhiliang2'),
+        name: '质量评价管理',
+        meta: { title: '质量评价管理', icon: 'peoples', affix: true ,roles:['3']}
+      }
+    ]
+  },
 
 
   // 404 page must be placed at the end !!!
