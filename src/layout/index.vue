@@ -13,6 +13,8 @@
       </right-panel>
     </div>
   </div>
+
+
 </template>
 
 <script>
@@ -99,4 +101,14 @@ export default {
   .mobile .fixed-header {
     width: 100%;
   }
+  .background_style{
+    width:100%;
+    height:100%;
+    position:fixed;
+    background-size:cover;
+    background-image: url("../views/login/bgimg/6.jpg");
+    background-position: center;
+    position: relative;
+  }
+
 </style>

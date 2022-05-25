@@ -40,7 +40,7 @@ export function updateArticle(data) {
   })
 }
 export function fetchByName(query) {
-  const param = { id: 1, title: query.title.trim() }
+  const param = { id: 1, title: query.title }
   return request({
     url: '/shopitem/querybyname',
     method: 'get',
@@ -48,7 +48,7 @@ export function fetchByName(query) {
   })
 }
 export function fetchByType(query) {
-  const param = { id: 1, tag: query.type.trim() }
+  const param = { id: 1, tag: query.type }
   return request({
     url: '/shopitem/querybytag',
     method: 'get',

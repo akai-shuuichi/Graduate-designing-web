@@ -36,7 +36,7 @@
           :value="item.key"
         />
       </el-select>
-      <el-select
+<!--      <el-select
         v-model="listQuery.sort"
         style="width: 140px"
         class="filter-item"
@@ -48,7 +48,7 @@
           :label="item.label"
           :value="item.key"
         />
-      </el-select>
+      </el-select>-->
       <el-button
         v-waves
         class="filter-item"

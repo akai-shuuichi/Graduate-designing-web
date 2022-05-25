@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input
+<!--      <el-input
         v-model.trim="listQuery.title"
         placeholder="请输入您要查询的菜品"
         style="width: 200px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
-      />
+      />-->
 <!--      <el-select
         v-model="listQuery.importance"
         placeholder="Imp"
@@ -22,34 +22,21 @@
           :value="item"
         />
       </el-select>-->
+
       <el-select
-        v-model="listQuery.type"
-        placeholder="类型"
+        v-model="listQuery.sort"
+        style="width: 140px"
         class="filter-item"
-        style="width: 130px"
         @change="sortByType"
       >
         <el-option
           v-for="item in calendarTypeOptions"
           :key="item.key"
-          :label="item.display_name"
-          :value="item.key"
-        />
-      </el-select>
-      <el-select
-        v-model="listQuery.sort"
-        style="width: 140px"
-        class="filter-item"
-        @change="handleFilter"
-      >
-        <el-option
-          v-for="item in sortOptions"
-          :key="item.key"
           :label="item.label"
           :value="item.key"
         />
       </el-select>
-      <el-button
+<!--      <el-button
         v-waves
         class="filter-item"
         type="primary"
@@ -57,8 +44,8 @@
         @click="handleFilter"
       >
         搜索
-      </el-button>
-      <el-button
+      </el-button>-->
+<!--      <el-button
         class="filter-item"
         style="margin-left: 10px"
         type="primary"
@@ -66,7 +53,7 @@
         @click="handleCreate"
       >
         添加新菜品
-      </el-button>
+      </el-button>-->
 <!--      <el-button
         v-waves
         :loading="downloadLoading"
@@ -109,18 +96,23 @@
           <span>{{ row.userid }}</span>
         </template>
       </el-table-column> -->
-      <el-table-column label="评价" sortable="custom" align="center" width="880">
+      <el-table-column label="窗口编号"  align="center" width="180">
+        <template slot-scope="{ row }">
+          <span>{{ row.shopid }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="评价"  align="center" width="680">
         <template slot-scope="{ row }">
           <span>{{ row.info }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="评价时间" sortable="custom" align="center" width="80">
+      <el-table-column label="评价时间" sortable="custom" align="center" width="180">
         <template slot-scope="{ row }">
           <span>{{ formatDate(row.time) }}</span>
         </template>
       </el-table-column>
 
-     
+
     </el-table>
 
     <pagination
@@ -131,7 +123,7 @@
       @pagination="getList"
     />
 
- 
+
   </div>
 </template>
 
@@ -148,7 +140,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import PanThumb from '@/components/PanThumb'
-const calendarTypeOptions = [{ key: '主食', display_name: '主食' }, { key: '配菜', display_name: '配菜' }, { key: '小吃', display_name: '小吃' }, { key: '饮品', display_name: '饮品' }, { key: '全部', display_name: '全部' }]
+const calendarTypeOptions = [{ key: '好评优先', display_name: '好评优先' }, { key: '差评优先', display_name: '差评优先' }]
 
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
@@ -184,16 +176,18 @@ export default {
         page: 1,
         limit: 20,
         id:5,
+        shopid:1,
+        orderbysorce:0,
         importance: undefined,
         title: undefined,
         type: '',
-        sort: '+id'
+        sort: '差评优先'
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
       sortOptions: [
-        { label: 'ID Ascending', key: '+id' },
-        { label: 'ID Descending', key: '-id' }
+        { label: '好评优先', key: '0' },
+        { label: '差评优先', key: '1' }
       ],
       // statusOptions: ['published', 'draft', 'deleted'],
       statusOptions: ['主食','配菜','小吃','饮品'],
@@ -232,7 +226,7 @@ export default {
       request({
         url: '/quality/queryByshopId',
         method: 'get',
-        // params: query
+        params: this.listQuery
         }).then((res)=>{
             this.list=res.data;
             this.total = res.data.length
@@ -252,7 +246,7 @@ export default {
 
     handleFilter() {
       this.listQuery.page = 1
-      this.sortItem()
+      this.sortByType()
     },
     handleModifyStatus(row, status) {
       this.$message({
@@ -297,24 +291,23 @@ export default {
     },
     sortByType() {
       this.listLoading = true
-      if (this.listQuery.type === '全部') {
-        fetchList(this.listQuery).then((response) => {
-          this.list = response.data
-          this.total = response.data.length
-          // Just to simulate the time of the request
-          setTimeout(() => {
-            this.listLoading = false
-          }, 1.5 * 1000)
-        })
-      } else {
-        fetchByType(this.listQuery).then((response) => {
-          this.list = response.data
-          this.total = response.data.length
-          setTimeout(() => {
-            this.listLoading = false
-          }, 1.5 * 1000)
-        })
+      if (this.listQuery.sort == '好评优先') {
+        this.listQuery.orderbysorce = 1
+      } else if(this.listQuery.sort == '差评优先') {
+        this.listQuery.orderbysorce = 0
       }
+      console.log(this.listQuery.orderbysorce)
+      request({
+        url: '/quality/queryByshopId',
+        method: 'get',
+        params: this.listQuery
+      }).then((res)=>{
+        this.list=res.data;
+        this.total = res.data.length
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
     resetTemp() {
       this.temp = {
@@ -335,7 +328,6 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
-
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {

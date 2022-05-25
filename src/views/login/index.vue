@@ -11,7 +11,6 @@
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
           v-model="loginForm.username"
           placeholder="Username"
           name="username"
@@ -53,9 +52,9 @@
           <span />
         </div>
 
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
+<!--        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
           立即注册
-        </el-button>
+        </el-button>-->
       </div>
     </el-form>
 
