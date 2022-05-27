@@ -115,9 +115,14 @@
           <span>{{ row.userid }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="评价时间"align="center" width="180">
+      <el-table-column label="评价时间" align="center" width="180">
         <template slot-scope="{ row }">
           <span>{{ formatDate(row.time) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="系统评价" sortable="custom" align="center" width="180">
+        <template slot-scope="{ row }">
+          <span>{{ formatscore(row.score) }}</span>
         </template>
       </el-table-column>
 
@@ -248,6 +253,17 @@ export default {
             }, 1.5 * 1000)
         })
     },
+         formatscore(score){
+        if(score>0.5){
+          return "好评"
+        }else if(score>=0){
+          return "一般"
+        }else if(score>-0.5){
+          return "差评"
+        }else{
+          return "非常差"
+        }
+     },
     handleFilter() {
       this.listQuery.page = 1
       this.sortItem()

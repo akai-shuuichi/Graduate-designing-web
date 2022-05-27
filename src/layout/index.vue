@@ -106,7 +106,7 @@ export default {
     height:100%;
     position:fixed;
     background-size:cover;
-    background-image: url("../views/login/bgimg/6.jpg");
+    // background-image: url("../views/login/bgimg/6.jpg");
     background-position: center;
     position: relative;
   }

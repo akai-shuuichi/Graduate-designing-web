@@ -111,6 +111,12 @@
           <span>{{ formatDate(row.time) }}</span>
         </template>
       </el-table-column>
+      <!-- content -->
+      <el-table-column label="系统评价" sortable="custom" align="center" width="180">
+        <template slot-scope="{ row }">
+          <span>{{ formatscore(row.score) }}</span>
+        </template>
+      </el-table-column>
 
 
     </el-table>
@@ -243,6 +249,17 @@ export default {
         return   year+"-"+month+"-"+date
          }
      ,
+     formatscore(score){
+        if(score>0.5){
+          return "好评"
+        }else if(score>=0){
+          return "一般"
+        }else if(score>-0.5){
+          return "差评"
+        }else{
+          return "非常差"
+        }
+     },
 
     handleFilter() {
       this.listQuery.page = 1
@@ -302,8 +319,22 @@ export default {
         method: 'get',
         params: this.listQuery
       }).then((res)=>{
-        this.list=res.data;
         this.total = res.data.length
+        for(let i=0;i<this.total;i++){
+          let pj="";
+          if(res.data[i].score>0.5){
+            pj="好评";
+          }else if(res.data[i].score>=0&&res.data[i].score<=0.5){
+            pj="一般"
+          }else if(res.data[i].score<0&&res.data[i].score>-0.5){
+            pj="差评";
+          }else{
+            pj="非常差评"
+          }
+          res.data[i].content=pj;
+        }
+        this.list=res.data;
+       
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
