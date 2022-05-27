@@ -91,8 +91,8 @@ export const constantRoutes = [
       {
         path: 'index',
         component: () => import('@/views/permission/directive'),
-        name: '角色权限',
-        meta: { title: '角色权限', icon: 'people', affix: true }
+        name: '主页',
+        meta: { title: '主页', icon: 'people', affix: true }
       }
     ]
   },
