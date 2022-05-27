@@ -210,9 +210,10 @@ export const asyncRoutes = [
         meta: { title: '交流空间', icon: 'peoples', affix: true ,roles:['2']}
       }
     ]
-  },
+  }
+  ,
   {
-    path: '/table/zhiliang1',
+    path: '/table/com',
     component: Layout,
     redirect: '/table/zhiliang1',
     children: [
@@ -221,6 +222,19 @@ export const asyncRoutes = [
         component: () => import('@/views/20220523/zhiliang1'),
         name: '质量评价',
         meta: { title: '质量评价', icon: 'peoples', affix: true ,roles:['2']}
+      }
+    ]
+  },
+  {
+    path: '/table/tableadmin',
+    component: Layout,
+    redirect: '/table/tableadmin',
+    children: [
+      {
+        path: 'tableadmin',
+        component: () => import('@/views/table/complex-tableadmin'),
+        name: 'ComplexTable',
+        meta: { title: '菜品管理' , icon: 'peoples',roles:['3']}
       }
     ]
   },  {

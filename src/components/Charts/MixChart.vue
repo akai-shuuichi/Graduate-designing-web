@@ -51,7 +51,7 @@ export default {
         url: '/order/queryData',
         method: 'post',
         data: {
-          time: 1650965933371
+          
         }
       }).then(data => {
         const cateMap = []

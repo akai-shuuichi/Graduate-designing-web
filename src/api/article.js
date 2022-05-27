@@ -8,6 +8,7 @@ export function fetchList(query) {
   })
 }
 
+
 export function fetchArticle(id) {
   return request({
     url: '/vue-element-admin/article/detail',
@@ -47,6 +48,7 @@ export function fetchByName(query) {
     params: param
   })
 }
+
 export function fetchByType(query) {
   const param = { id: 1, tag: query.type }
   return request({

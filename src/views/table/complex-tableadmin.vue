@@ -3,7 +3,7 @@
     <div class="filter-container">
       <el-input
         v-model.trim="listQuery.title"
-        placeholder="请输入您要查询的窗口"
+        placeholder="请输入您要查询的菜品"
         style="width: 200px"
         class="filter-item"
         @keyup.enter.native="handleFilter"
@@ -23,18 +23,32 @@
         />
       </el-select>-->
       <el-select
-        v-model="listQuery.sort"
-        style="width: 140px"
+        v-model="listQuery.type"
+        placeholder="类型"
         class="filter-item"
+        style="width: 130px"
         @change="sortByType"
       >
         <el-option
           v-for="item in calendarTypeOptions"
           :key="item.key"
-          :label="item.label"
+          :label="item.display_name"
           :value="item.key"
         />
       </el-select>
+<!--      <el-select
+        v-model="listQuery.sort"
+        style="width: 140px"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option
+          v-for="item in sortOptions"
+          :key="item.key"
+          :label="item.label"
+          :value="item.key"
+        />
+      </el-select>-->
       <el-button
         v-waves
         class="filter-item"
@@ -44,7 +58,7 @@
       >
         搜索
       </el-button>
-<!--      <el-button
+      <el-button
         class="filter-item"
         style="margin-left: 10px"
         type="primary"
@@ -52,7 +66,7 @@
         @click="handleCreate"
       >
         添加新菜品
-      </el-button>-->
+      </el-button>
 <!--      <el-button
         v-waves
         :loading="downloadLoading"
@@ -89,45 +103,123 @@
         </template>
       </el-table-column> -->
 
-
-      <!-- <el-table-column label="用户id" sortable="custom" align="center" width="80">
+      <el-table-column
+        label="菜品图片"
+        align="center"
+        width="120"
+      >
         <template slot-scope="{ row }">
-          <span>{{ row.userid }}</span>
-        </template>
-      </el-table-column> -->
-      <el-table-column label="窗口名称"  align="center" width="180">
-        <template slot-scope="{ row }">
-          <span>{{ row.shopinfo.shopName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="窗口介绍"  align="center" width="180">
-        <template slot-scope="{ row }">
-          <span>{{ row.shopinfo.shopRemark }}</span>
+          <!-- <span>{{ row.item_url }}</span> -->
+          <img :src="row.item_url" width="110" height="110">
         </template>
       </el-table-column>
-      <el-table-column label="评价" align="center" width="450">
+      <el-table-column
+        label="菜品名称"
+        align="center"
+        width="120"
+      >
         <template slot-scope="{ row }">
-          <span>{{ row.info }}</span>
+          <span>{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="用户"  align="center" width="120">
+      <el-table-column
+        label="介绍语"
+        align="center"
+        width="120"
+      >
         <template slot-scope="{ row }">
-          <span>用户{{ row.userid }}</span>
+          <span>{{ row.context }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="评价时间" align="center" width="180">
+      <el-table-column label="原价" sortable="custom" align="center" width="80">
         <template slot-scope="{ row }">
-          <span>{{ formatDate(row.time) }}</span>
+          <span>{{ row.baseprice }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="系统评价" sortable="custom" align="center" width="180">
+      <el-table-column label="现价" sortable="custom" align="center" width="80">
         <template slot-scope="{ row }">
-          <span>{{ formatscore(row.score) }}</span>
+          <span>{{ row.nowprice }}</span>
         </template>
       </el-table-column>
-
-
-
+      <el-table-column label="库存" sortable="custom" align="center" width="80">
+        <template slot-scope="{ row }">
+          <span>{{ row.count }}</span>
+        </template>
+      </el-table-column>
+      <!--      <el-table-column label="Date" width="150px" align="center">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <span>{{ row.createdata | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="Title" min-width="150px">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>-->
+      <!--          <el-tag>{{ row.type | typeFilter }}</el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="Author" width="110px" align="center">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <span>{{ row.author }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <span style="color:red;">{{ row.reviewer }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="Imp" width="80px">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="Readings" align="center" width="95">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
+      <!--          <span v-else>0</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <!--      <el-table-column label="Status" class-name="status-col" width="100">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <el-tag :type="row.status | statusFilter">-->
+      <!--            {{ row.status }}-->
+      <!--          </el-tag>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
+      <el-table-column
+        label="操作"
+        align="center"
+        width="300"
+        class-name="small-padding fixed-width"
+      >
+        <template slot-scope="{ row, $index }">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            修改
+          </el-button>
+          <el-button
+            v-if="row.status != 'published'"
+            size="mini"
+            type="success"
+            @click="handleModifyStatus(row, 'published')"
+          >
+            上架
+          </el-button>
+          <el-button
+            v-if="row.status != 'draft'"
+            size="mini"
+            @click="handleModifyStatus(row, 'draft')"
+          >
+            下架
+          </el-button>
+          <el-button
+            v-if="row.status != 'deleted'"
+            size="mini"
+            type="danger"
+            @click="handleDelete(row, $index)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -138,13 +230,101 @@
       @pagination="getList"
     />
 
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+      <el-form
+        ref="dataForm"
+        :model="temp"
+        label-position="left"
+        label-width="70px"
+        style="width: 400px; margin-left: 50px"
+      >
+        <!-- <el-form-item label="Type" prop="type">
+          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+          </el-select>
+        </el-form-item> -->
+        <!-- <el-form-item label="Date" prop="timestamp">
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        </el-form-item> -->
+        <el-form-item label="图例" prop="item_url">
+          <!-- <img :src="temp.item_url" height="120" width="120" /> -->
+          <el-upload
+            :data="picurl"
+            :multiple="false"
+            :show-file-list="false"
+            drag
+            action="http://127.0.0.1:8081/api/upload"
+          >
+            <img :src="temp.item_url" height="100%" width="100%">
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="名称" prop="title">
+          <el-input v-model="temp.name" />
+        </el-form-item>
+        <el-form-item label="分类">
+          <el-select
+            v-model="temp.status"
+            class="filter-item"
+            placeholder="分类"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="推荐指数">
+          <el-rate
+            v-model="temp.importance"
+            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+            :max="3"
+            style="margin-top: 8px"
+          />
+        </el-form-item>
+        <el-form-item label="推荐语">
+          <el-input
+            v-model="temp.context"
+            :autosize="{ minRows: 2, maxRows: 4 }"
+            type="textarea"
+            placeholder="Please input"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false"> Cancel </el-button>
+        <el-button
+          type="primary"
+          @click="dialogStatus === 'create' ? createData() : updateData()"
+        >
+          Confirm
+        </el-button>
+      </div>
+    </el-dialog>
 
+    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+      <el-table
+        :data="pvData"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
+      >
+        <el-table-column prop="key" label="Channel" />
+        <el-table-column prop="pv" label="Pv" />
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          @click="dialogPvVisible = false"
+        >Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-
-import request from '@/utils/request'
 import {
   fetchList,
   fetchPv,
@@ -155,7 +335,8 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import PanThumb from '@/components/PanThumb'
-const calendarTypeOptions =  [{ key: '好评优先', display_name: '好评优先' }, { key: '差评优先', display_name: '差评优先' }]
+import request from '@/utils/request'
+const calendarTypeOptions = [{ key: '主食', display_name: '主食' }, { key: '配菜', display_name: '配菜' }, { key: '小吃', display_name: '小吃' }, { key: '饮品', display_name: '饮品' }, { key: '全部', display_name: '全部' }]
 
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
@@ -191,14 +372,17 @@ export default {
         page: 1,
         limit: 20,
         id:5,
-        orderbysorce: 0,
         importance: undefined,
         title: undefined,
         type: '',
-        sort: '好评优先'
+        sort: '+id'
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
+      sortOptions: [
+        { label: 'ID Ascending', key: '+id' },
+        { label: 'ID Descending', key: '-id' }
+      ],
       // statusOptions: ['published', 'draft', 'deleted'],
       statusOptions: ['主食','配菜','小吃','饮品'],
       showReviewer: false,
@@ -231,39 +415,27 @@ export default {
     this.getList()
   },
   methods: {
-    formatDate(time) {
-     var date = new Date(time);
-      var year=date.getFullYear();
-      var month=date.getMonth()+1;
-      var date=date.getDate();
-       return   year+"-"+month+"-"+date
-         }
-     ,
     getList() {
       this.listLoading = true
       request({
-        url: '/quality/queryAll',
+        url: '/shopitem/queryAdmin',
         method: 'get',
-        params: this.listQuery
-        }).then((res)=>{
-            this.list=res.data;
-            this.total = res.data.length
-            setTimeout(() => {
-            this.listLoading = false
-            }, 1.5 * 1000)
-        })
-    },
-         formatscore(score){
-        if(score>0.5){
-          return "好评"
-        }else if(score>=0){
-          return "一般"
-        }else if(score>-0.5){
-          return "差评"
-        }else{
-          return "非常差"
+       }).then((response) => {
+        this.list = response.data
+        this.total = response.data.length
+        for (let i = 0; i < this.total; i++) {
+          if (i === 0) console.log(response)
+          if (this.list[i].item_url.search('baidu') !== -1) {
+            this.list[i].item_url =
+              'http://139.198.154.63:8081/forward?' + this.list[i].item_url
+          }
         }
-     },
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
     handleFilter() {
       this.listQuery.page = 1
       this.sortItem()
@@ -311,22 +483,24 @@ export default {
     },
     sortByType() {
       this.listLoading = true
-      if (this.listQuery.sort == '差评优先') {
-        this.listQuery.orderbysorce = 0
-      } else if(this.listQuery.sort == '好评优先') {
-        this.listQuery.orderbysorce = 1
+      if (this.listQuery.type === '全部') {
+        fetchList(this.listQuery).then((response) => {
+          this.list = response.data
+          this.total = response.data.length
+          // Just to simulate the time of the request
+          setTimeout(() => {
+            this.listLoading = false
+          }, 1.5 * 1000)
+        })
+      } else {
+        fetchByType(this.listQuery).then((response) => {
+          this.list = response.data
+          this.total = response.data.length
+          setTimeout(() => {
+            this.listLoading = false
+          }, 1.5 * 1000)
+        })
       }
-      request({
-        url: '/quality/queryAll',
-        method: 'get',
-        params: this.listQuery
-      }).then((res)=>{
-        this.list=res.data;
-        this.total = res.data.length
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
-      })
     },
     resetTemp() {
       this.temp = {
